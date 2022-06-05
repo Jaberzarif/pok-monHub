@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poké Hub</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@1.x.x/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
+    <script src="js/main.js"></script>
+</head>
+
+<body class="container mx-auto h-screen" style="background: center / cover  url('img/nature-2.jpg'); background-repeat: no-repeat">
+    <div class="mx-auto justify-center text-center">
+        <div class="py-56 w-full">
+            <form class="flex flex-row mb-4 mx-auto justify-center" id="poki-form">
+                <input id="pokemon_name" type="text" name="pokemonSearch" value=""
+                    class="mr-2 flex bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 appearance-none leading-normal" placeholder="Pokemon Name" />
+                <button type="submit"
+                    class="flex bg-blue-500 text-white font-bold py-2 px-4 rounded">
+                    Search 
+                </button>
+            </form>
+
+            <div class="bg-gray-200 font-sans w-1/4 mx-auto rounded-lg py-2">
+                <h3 id="name" class="text-2xl mx-auto font-bold text-center mb-4 uppercase"></h3>
+                <div id="pokemon_image"></div>  
+                <p id="weight"></p>
+                <p id="height" class="mb-4"></p>
+                <p id="abilities" class="mb-4"></p>  
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+const pokiInput = document.getElementById('pokemon_name');
+const PokiForm = document.getElementById('poki-form');
+const errorSection = document.getElementById ('error');
+let apiRequest = new XMLHttpRequest();
+
+
+PokiForm.addEventListener('submit', ($event) => {
+  $event.preventDefault();
+  const searchPokemon = pokiInput.value;
+  apiRequest.open('GET', 'https://pokeapi.co/api/v2/pokemon/' + searchPokemon);
+  apiRequest.send();
+});
+
+
+apiRequest.onreadystatechange = () => {
+    if(apiRequest.readyState === 4) {
+        const resultName = document.getElementById('name');
+        const resultWeight = document.getElementById('weight');
+        const resultHeight = document.getElementById('height');
+        const resultAbilities = document.getElementById('abilities');
+        const response = JSON.parse(apiRequest.response)
+        
+        var toJson = JSON.stringify(response);
+        console.log(toJson)
+        // Get Pokémon Name
+        resultName.textContent = response.name;
+
+        resultWeight.textContent = ("Weight: " + response.weight);
+
+        resultHeight.textContent = ("Height: " + response.height);
+
+
+        resultAbilities.textContent = ("Abilities: " + response.abilities[0].ability.name + " , " + response.abilities[1].ability.name);
+
+
+        // Get Pokémon Image
+        const url = response.sprites.front_default;
+ 
+        $(document).ready(function() {
+            $('#pokemon_image').html(`<img class='mx-auto text-center bg-white rounded-full mb-4' src='${url}'>`);
+        });
+    }
+}
+</script>
+</html>
